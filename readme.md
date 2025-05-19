@@ -55,15 +55,15 @@ options:
 ```
 python okte-websocket-client.py --username $USERNAME --password $PASSWORD --client-cert cert.crt --client-key key.pem --okte-ca okte_ccert.pem --output-dir orderbook-snapshots --auto-save 10 --send-request-periodically 60
 ```
-Toto spustenie ziskava a uklada aktualnu knihu objednavok kazdych 10 sekund do priecinka orderbook-snapshots, nazov kazdeho snapsotu je `orderbook_snapshot-autosave_<timestamp>.json`, zaroven posiela preventivny reqest kazdych 60 sekund na ziskanie knihy objednavok (vynuluje sekvenciu, nie je potrebne, je vhodne na testovanie)
+Toto spustenie ziskava a uklada aktualnu knihu objednavok kazdych 10 sekund do priecinka orderbook-snapshots, nazov kazdeho snapsotu je `orderbook_snapshot-autosave_<timestamp>.json`, zaroven posiela preventivny request kazdych 60 sekund na ziskanie knihy objednavok (vynuluje sekvenciu, nie je potrebne, je vhodne na testovanie)
 - **Funkcionalita:**
   - Po spusteni skriptu sa zobrazia moznosti pre manualne zasahy (optional):
     - `"Zadaj príkaz ('send', 'save' alebo 'exit'):"`
       - **send** -> jednorazove poslanie requestu na ziskanie knihy objednavok (tak ako to automaticky robi send-request-periodically)
-      - **save** -> jednorazove ulozenie v knihi objednavok v aktualnom case (tak ako to robi auto-save), ulozi do suboru s nazvom `orderbook_snapshot_<timestamp>.json`
+      - **save** -> jednorazove ulozenie knihy objednavok v aktualnom case (tak ako to robi auto-save), ulozi do suboru s nazvom `orderbook_snapshot_<timestamp>.json`
       - **exit** -> ukonci vykonavanie skriptu 
 - **Websocket rozhranie OKTE:** 
-  - Tak ako je uvedene v [dokumentacii](https://okte.sk/media/5xkepcls/isot_technicka_specifikacia_externych_rozhrani_systemu_ut_1_19_upgradevdt_final.pdf) je dostupne pomocou GET volania `wss://isot.okte.sk:8443/api/v1/idm/ws?topics=orderbook`
+  - Tak ako je uvedene v [dokumentacii](https://okte.sk/media/5xkepcls/isot_technicka_specifikacia_externych_rozhrani_systemu_ut_1_19_upgradevdt_final.pdf) rozhranie je dostupne pomocou GET volania `wss://isot.okte.sk:8443/api/v1/idm/ws?topics=orderbook`
   - Z dokumentacie: `topics=orderbook` -> zmeny knihy objednávok. Knihu objednavok (**orderbook-snapshot (E08-01)**) klient obdrží automaticky pri prvom pripojení s `topic=orderbook` alebo na základe vlastnej požiadavky o obnovenie orderbook-snapshot. Websocket spojenie zostava otvorene a klient prijima dalej uz len zmeny v knihe objednavok (**orderbook-change (E12-02)**). 
   - Tieto zmeny (orderbook-change) sa zachytavaju a real-time aktualizuju knihu objednavok udrziavanu v pamati (premenna `orderbook_state`). Netreba tak zahlcovat sluzbu neustalymi poziadavkami na orderbook-snapshot (veľký dátový objem, velky pocet requestov), staci len prijimat spravy a aplikovat zmeny (male datove objekty).
-  - Na zaklade testovania sa drviva vacsina zmien tyka `buyChanges`, `sellChanges` a `statistics` pre jedntlive periody, a preto boli tieto zmeny implementovane v skripte, ostatne zmeny (`ownStatistics`, `BlockOrderChanges`) implementovane nie su (aktualne sa da riesit manualnym poslanim `send`, pripadne nastavenim `send-request-periodically`, cim sa ziska nova kniha objednavok aj s tymito aplikovanymi zmenami). Skript loguje tieto pripady a loguje: `"Nespracované zmeny v change_period: <zmeny>, pre aktualizáciu týchto zmien zadajte 'send'"`.
+  - Na zaklade testovania sa drviva vacsina zmien tyka `buyChanges`, `sellChanges` a `statistics` pre jedntlive periody, a preto boli tieto zmeny implementovane v skripte, ostatne zmeny (`ownStatistics`, `BlockOrderChanges`) implementovane nie su (aktualne sa da riesit manualnym poslanim `send`, pripadne nastavenim `send-request-periodically`, cim sa ziska nova kniha objednavok aj s tymito aplikovanymi zmenami). Skript tieto pripady loguje: `"Nespracované zmeny v change_period: <zmeny>, pre aktualizáciu týchto zmien zadajte 'send'"`.
