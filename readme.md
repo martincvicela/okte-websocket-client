@@ -9,7 +9,7 @@
 	openssl pkcs12 -in <PFX FILE> -nocerts -noenc  -passin pass:<PASSWORD> | openssl rsa -outform PEM -out key.pem
   	```
 - Pre úspešný TLS handshake je potrebné overiť certifikát servera OKTE, vrátane celého CA reťazca. Je mozne ho:
-  - stiahnut z [webu OKTE](htps://www.okte.sk/sk/informacie/oznamy/2025-02-13-vymena-serveroveho-certifikatu-okte-sk-dna-4-3-2025/)
+  - stiahnut z [webu OKTE](https://www.okte.sk/sk/informacie/oznamy/2025-02-13-vymena-serveroveho-certifikatu-okte-sk-dna-4-3-2025)
   - získať cez OpenSSL:
     ```
     openssl s_client -connect isot.okte.sk:443 -showcerts
